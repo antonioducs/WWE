@@ -1,0 +1,23 @@
+{
+    "rfid": {
+        "cod": {
+            "userid": "asdasasd"
+        }
+    },
+    "users": {
+        "uid1": {
+            "nome": "asdasd",
+            "apartamento": "4",
+            "img-perfil": "ashuasuh",
+            "rfid": "123",
+            "horarios": [
+                "151120191300",
+                "151120191400"
+            ]
+        }
+    },
+    
+    "configs": {
+        "horarios": ["1930", "0230"]
+    }
+}
