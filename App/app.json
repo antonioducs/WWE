@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "WashingWar",
+    "slug": "WashingWar",
+    "privacy": "public",
+    "sdkVersion": "34.0.0",
+    "platforms": ["ios", "android", "web"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icone.png",
+    "splash": {
+      "image": "./assets/Welcome.png",
+      "backgroundColor": "#555ED6",
+      "splash.backgroundColor": "#555ED6",
+      "resizeMode": "contain"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gempe.WashingWar"
+    },
+    "android": {
+      "package": "com.antonioducs.WashingWar",
+      "adaptiveIcon": {
+        "backgroundColor": "#129E54"
+      }
+    },
+    "packagerOpts": {
+      "config": "metro.config.js",
+      "sourceExts": ["js", "jsx", "svg", "ts", "tsx"]
+    }
+  }
+}
