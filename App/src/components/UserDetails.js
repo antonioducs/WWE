@@ -3,29 +3,25 @@ import { View, StyleSheet, Image, Text } from 'react-native';
 
 import { SCREEN_HEIGHT } from '../config/constants';
 import theme from '../styles/theme';
-import imgPerfil from '../../assets/user/perfil.jpg';
+
+import { connect } from 'react-redux';
+
+class UserDetails extends Component {
 
 
-export default class UserDetails extends Component {
-
-    state = {
-        img: imgPerfil,
-        nome: "Leonardo Batista",
-        apt: 2
-    };
-
+    
     render() {
         return (
             <>
                 <View style={styles.container}>
                     <Text style={styles.txtInfo}>Suas informações:</Text>
                     <View style={styles.info}>
-                        <Image source={imgPerfil} style={styles.img} />
+                        <Image source={this.props.photo} style={styles.img} />
 
-                        <Text style={styles.txtApt}>{this.state.nome}</Text>
+                        <Text style={styles.txtApt}>{this.props.name}</Text>
                         <View style={styles.containerTxt}>
                             <Text style={styles.txtApt}>Apt: </Text>
-                            <Text style={styles.txt}>{this.state.apt}</Text>
+                            <Text style={styles.txt}>{this.props.apt}</Text>
                         </View>
                     </View>
                 </View>
@@ -70,3 +66,10 @@ const styles = StyleSheet.create({
         fontSize: 14
     }
 });
+
+const mapStateToProps = state => {
+    const { user } = state;
+    return { user };
+}
+
+export default connect(mapStateToProps)(UserDetails);

@@ -1,12 +1,41 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, StatusBar, TextInput, Dimensions } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  TextInput,
+  Dimensions,
+  ActivityIndicator,
+  Alert
+} from 'react-native';
 import { TapGestureHandler, State } from 'react-native-gesture-handler'
 import Animated, { Easing } from 'react-native-reanimated'
 import Svg, { Image, Circle, ClipPath } from 'react-native-svg'
 import Ripple from 'react-native-material-ripple';
+import theme from '../styles/theme';
 
 const { height, width } = Dimensions.get('window'); //pega todo o tamanho da tela
-const { Value, event, block, cond, eq, set, Clock, startClock, stopClock, debug, timing, clockRunning, interpolate, Extrapolate, concat } = Animated
+const {
+  Value,
+  event,
+  block,
+  cond,
+  eq,
+  set,
+  Clock,
+  startClock,
+  stopClock,
+  debug,
+  timing,
+  clockRunning,
+  interpolate,
+  Extrapolate,
+  concat } = Animated
+
+import firebase from 'firebase';
+import { newUser, processLogin } from '../actions';
+import { connect } from 'react-redux';
 
 function runTiming(clock, value, dest) {
   const state = {
@@ -39,10 +68,17 @@ function runTiming(clock, value, dest) {
 
 class StartScreen extends Component {
 
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      email: "",
+      password: "",
+      isLoading: false
+    }
 
     this.buttonOpacity = new Value(1);
+
 
     this.onStateChange = event([
       {
@@ -97,6 +133,90 @@ class StartScreen extends Component {
     ]);
   }
 
+  componentDidMount() {
+    var firebaseConfig = {
+      apiKey: "AIzaSyBqdUPe_OjKXgg7_e9KjThFS7t4W9fIUCw",
+      authDomain: "wwdb-e4fd3.firebaseapp.com",
+      databaseURL: "https://wwdb-e4fd3.firebaseio.com",
+      projectId: "wwdb-e4fd3",
+      storageBucket: "wwdb-e4fd3.appspot.com",
+      messagingSenderId: "113330992193",
+      appId: "1:113330992193:web:5aaf22b06b01d7ab07c2c0"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  processLogin = async () => {
+    this.setState({
+      isLoading: true
+    });
+    const { email, password } = this.state;
+
+    await firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(async () => {
+        await this.props.processLogin();
+        this.props.navigation.navigate('HomeScreen')
+      })
+      .catch(error => {
+
+        if (error.code == 'auth/user-not-found') {
+          Alert.alert(
+            "Usuário não encontrado",
+            "Desaja criar um novo usuário?",
+            [{
+              text: 'Não',
+              onPress: () => { }
+            },
+            {
+              text: 'Sim',
+              onPress: async () => {
+                await firebase
+                  .auth()
+                  .createUserWithEmailAndPassword(email, password)
+                  .then(async () => {
+                    await this.props.newUser();
+                    this.props.navigation.navigate('HomeScreen');
+                  }
+                  )
+                  .catch(error => {
+                    console.log(error.message);
+                  });
+              }
+            }],
+            { cancelable: false }
+          );
+        }
+      })
+
+    this.setState({
+      isLoading: false
+    });
+  }
+
+  onChangeHandler(field, valor) {
+    this.setState({
+      [field]: valor
+    })
+  }
+
+  renderButton() {
+    if (this.state.isLoading)
+      return <ActivityIndicator />;
+    return (
+      <Ripple
+        onPress={() => this.processLogin()}>
+        <Animated.View style={styles.button}>
+
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>LOGAR</Text>
+
+        </Animated.View>
+      </Ripple>
+    );
+  }
+
   render() {
     return (
       <View
@@ -128,13 +248,10 @@ class StartScreen extends Component {
 
           <TapGestureHandler onHandlerStateChange={this.onStateChange}>
             <Animated.View style={{ ...styles.button, opacity: this.buttonOpacity, transform: [{ translateY: this.buttonA }] }}>
-              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>LOGAR</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>LOGAR</Text>
             </Animated.View>
           </TapGestureHandler>
 
-          <Animated.View style={{ ...styles.button, backgroundColor: '#2E71DC', opacity: this.buttonOpacity, transform: [{ translateY: this.buttonA }] }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>LOGAR COM O FACEBOOK</Text>
-          </Animated.View>
           <Animated.View style={{
             zIndex: this.textInputZindex,
             opacity: this.textInputOpacity,
@@ -158,19 +275,26 @@ class StartScreen extends Component {
 
             <TextInput placeholder='E-mail'
               style={styles.textInput}
-              placeholderTextColor='black' />
+              placeholderTextColor='black'
+              value={this.state.email}
+              onChangeText={valor => {
+                this.onChangeHandler('email', valor)
+              }}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
 
             <TextInput placeholder='Senha'
               style={styles.textInput}
-              placeholderTextColor='black' />
-            <Ripple
-              onPress={() => { this.props.navigation.navigate('HomeScreen'); }}>
-              <Animated.View style={styles.button}>
-
-                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>LOGAR</Text>
-
-              </Animated.View>
-            </Ripple>
+              placeholderTextColor='black'
+              secureTextEntry
+              value={this.state.password}
+              onChangeText={valor => {
+                this.onChangeHandler('password', valor)
+              }}
+              autoCapitalize="none"
+            />
+            {this.renderButton()}
           </Animated.View>
         </View>
 
@@ -178,7 +302,7 @@ class StartScreen extends Component {
     );
   }
 }
-export default StartScreen;
+export default connect(null, { newUser, processLogin })(StartScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -187,7 +311,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent'
   },
   button: {
-    backgroundColor: 'white',
+    backgroundColor: theme.primaryColor,
     height: 70,
     marginHorizontal: 20,
     borderRadius: 35,
