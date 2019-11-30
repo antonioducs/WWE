@@ -8,41 +8,11 @@ import Collapsible from 'react-native-collapsible';
 
 import { SCREEN_HEIGHT } from '../config/constants';
 import theme from '../styles/theme';
-import usuario from '../../assets/user/perfil.jpg';
 
 export default class TimesScreen extends Component {
 
     state = {
-        list: [
-            {
-                hora: '18',
-                min: '15',
-                qtdMaquinas: 2,
-                reservasDisponiveis: 0,
-                users: ['../../../assets/user/perfil.jpg', '../../../assets/user/perfil.jpg']
-            },
-            {
-                hora: '19',
-                min: '30',
-                qtdMaquinas: 2,
-                reservasDisponiveis: 2,
-                users: []
-            },
-            {
-                hora: '21',
-                min: '15',
-                qtdMaquinas: 2,
-                reservasDisponiveis: 2,
-                users: []
-            },
-            {
-                hora: '22',
-                min: '00',
-                qtdMaquinas: 2,
-                reservasDisponiveis: 2,
-                users: []
-            }
-        ],
+        list: [],            
         descReservaNumber: -1,
         day: 10,
         month: 10,
@@ -113,24 +83,13 @@ export default class TimesScreen extends Component {
                                         colors={[theme.primaryColor, theme.textGray]}
                                     >
                                         <View style={styles.contentReserva}>
-                                            <Image
-                                                sourcer={usuario}
+                                           {/* <Image
+                                                sourcer={}
                                                 style={styles.img}
-                                            />
-                                            <Text style={styles.txtReservar}>Maquina 1: </Text>
+                                           />*/}
                                             <Button buttonStyle={styles.btnReservar}
                                                 title="Reservar"
                                                 disabled
-                                            />
-                                        </View>
-                                        <View style={styles.contentReserva}>
-                                            <Image
-                                                sourcer={{ url: (this.state.list[0].users[0]) }}
-                                                style={styles.img}
-                                            />
-                                            <Text style={styles.txtReservar}>Maquina 2: </Text>
-                                            <Button buttonStyle={styles.btnReservar}
-                                                title="Reservar"
                                             />
                                         </View>
                                     </LinearGradient>

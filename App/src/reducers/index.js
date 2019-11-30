@@ -1,10 +1,11 @@
 import { combineReducers } from 'redux';
 import userReducers from './userReducer';
 import rfidReducers from './rfidReducer';
+import configsReducers from './configsReducer';
 
 
-//retorna um state e uma action
 export default combineReducers({
     user: userReducers,
-    rfid: rfidReducers
+    rfid: rfidReducers,
+    configs: configsReducers,
 });

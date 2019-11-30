@@ -5,9 +5,11 @@ import { CalendarList, LocaleConfig } from 'react-native-calendars';
 import { SCREEN_HEIGHT } from "../config/constants";
 import theme from '../styles/theme';
 
+import { connect } from 'react-redux';
+import { loadConfigs } from '../actions';
 
 
-export default class CalendarScreen extends Component {
+class CalendarScreen extends Component {
 
     state = {
         selectd: 1,
@@ -16,10 +18,11 @@ export default class CalendarScreen extends Component {
         maxDias: 0
     };
 
-    componentDidMount() {
+    async componentDidMount() {
+        await this.props.loadConfigs();
         const month = new Date().getMonth() + 1;
         const ano = new Date().getFullYear();
-        const outher = new Date().setDate(new Date().getDate() + 13);
+        const outher = new Date().setDate(new Date().getDate() + this.props.configs.dias-2);
 
         this.setState({
             selectd: month,
@@ -76,6 +79,16 @@ export default class CalendarScreen extends Component {
     }
 }
 
+const mapStateToProps = state => {
+    const { configs } = state;
+    return { configs };
+}
+
+const mapDispatchToProps = {
+    loadConfigs
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CalendarScreen);
 
 const styles = StyleSheet.create({
     container: {

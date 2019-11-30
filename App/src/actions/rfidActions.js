@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import { Alert } from 'react-native';
+
 
 export const SET_RFID = 'SET_RFID';
 export const setRfid = value => ({
