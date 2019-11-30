@@ -7,12 +7,14 @@ import StartScreen from './screens/StartScreen';
 import CalendarScreen from './screens/CalendarScreen';
 import HomeScreen from './screens/HomeScreen';
 import TimesScreen from './screens/TimesScreen';
+import UserDetailsScreen from './screens/UserDetailsScreen';
 
 import theme from './styles/theme';
 
 
 const AppNavigator = createStackNavigator(
   {
+    
     StartScreen: {
       screen: StartScreen,
       navigationOptions: {
@@ -23,6 +25,16 @@ const AppNavigator = createStackNavigator(
       screen: HomeScreen,
       navigationOptions: {
         header: null
+      }
+    },
+    UserDetailsScreen: {
+      screen: UserDetailsScreen,
+      navigationOptions: {
+        title: 'Suas Informações',
+        headerTintColor: theme.secondaryColor,
+        headerStyle: {
+          backgroundColor: theme.primaryColor
+        }
       }
     },
     CalendarScreen: {

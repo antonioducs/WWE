@@ -1,58 +1,14 @@
 import React, { Component, Fragment } from 'react';
 import { View, StyleSheet, Text, Animated } from 'react-native';
-import Ripple from 'react-native-material-ripple';
-
+import Lottie from 'lottie-react-native';
 
 import theme from '../styles/theme';
-import IconMaquina from '../../assets/maquina.svg';
+import CardHorario from './CardHorario';
+import notFoundAnimation from '../../assets/animations/notFoundAnimation.json';
 
+import { connect } from 'react-redux';
 
-export default class ListAtividades extends Component {
-
-    state = {
-        list: [
-            {
-                machineNumber: 1,
-                date: '25-09-2019',
-                time: '19h30min'
-            },
-            {
-                machineNumber: 1,
-                date: '25-09-2019',
-                time: '20h30min'
-            },
-            {
-                machineNumber: 1,
-                date: '26-09-2019',
-                time: '9h30min'
-            },
-            {
-                machineNumber: 2,
-                date: '27-09-2019',
-                time: '6h30min'
-            },
-            {
-                machineNumber: 2,
-                date: '27-09-2019',
-                time: '7h30min'
-            },
-            {
-                machineNumber: 2,
-                date: '27-09-2019',
-                time: '7h30min'
-            },
-            {
-                machineNumber: 2,
-                date: '27-09-2019',
-                time: '7h30min'
-            },
-            {
-                machineNumber: 2,
-                date: '27-09-2019',
-                time: '7h30min'
-            }]
-    };
-
+class ListAtividades extends Component {
 
     render() {
 
@@ -68,68 +24,53 @@ export default class ListAtividades extends Component {
                         useNativeDriver: true
                     })}
                 >
-                    {this.state.list.length && this.state.list.map((item, key) => {
-                        return (
-                            <Fragment key={key.toString()}>
-                                <View>
-                                    <Ripple
-                                        style={[styles.card, {
-                                            backgroundColor: key % 2 === 1 ? theme.primaryColor : theme.secondaryColor
-                                        }]
-                                        }
-                                        rippleContainerBorderRadius={20}
-                                        onPress={() => console.log("ListAtvPress")}>
-                                        <View style={styles.contentCard} >
-                                            <IconMaquina fill={key % 2 === 1 ? theme.secondaryColor : theme.primaryColor} />
-                                            <View>
-                                                <Text style={[styles.txtCard, {
-                                                    color: key % 2 === 1 ? theme.secondaryColor : theme.primaryColor
-                                                }]
-                                                }>Maquina {item.machineNumber}</Text>
-                                                <Text style={[styles.txtCard, {
-                                                    color: key % 2 === 1 ? theme.secondaryColor : theme.primaryColor
-                                                }]
-                                                }>Dia {item.date}</Text>
-                                                <Text style={[styles.txtCard, {
-                                                    color: key % 2 === 1 ? theme.secondaryColor : theme.primaryColor
-                                                }]
-                                                }>{item.time}</Text>
-                                            </View>
-                                        </View>
-                                    </Ripple>
-                                </View>
-                            </Fragment>
-                        );
-                    })}
+                    {(this.props.user.horarios
+                        && this.props.user.horarios.length
+                        && this.props.user.horarios.map((item, key) => {
+                            const date = item.substr(0, 2) + "/" + item.substr(2, 2) + "/" + item.substr(4, 4);
+                            const time = item.substr(8, 2) + ":" + item.substr(10, 2);
+                            const primaryColor = key % 2 === 0 ? theme.primaryColor : theme.secondaryColor;
+                            const secondaryColor = key % 2 === 0 ? theme.secondaryColor : theme.primaryColor;
+                            return (
+                                <Fragment key={key.toString()}>
+                                    <View>
+                                        <CardHorario
+                                            primaryColor={primaryColor}
+                                            secondaryColor={secondaryColor}
+                                            date={date}
+                                            time={time}
+                                            onPress={() => console.log('Press Card')}
+                                        />
+                                    </View>
+                                </Fragment>
+                            );
+                        })) ||
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <Lottie
+                                autoSize
+                                source={notFoundAnimation}
+                                autoPlay
+                                loop
+                            />
+                            <Text>Nenhuma atividade por aqui.</Text>
+                        </View>
+                    }
                 </Animated.ScrollView>
             </View>
         );
     }
 }
 
+const mapStateToProps = state => {
+    const { user } = state;
+    return { user };
+}
+
+export default connect(mapStateToProps)(ListAtividades);
+
 const styles = StyleSheet.create({
     safeArea: {
         backgroundColor: theme.backgroundGray
-    },
-    card: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        height: 130,
-        borderRadius: 10,
-        padding: 15,
-        margin: 8,
-        marginVertical: 4
-    },
-    contentCard: {
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        marginVertical: 15
-    },
-    txtCard: {
-        fontSize: 16,
-        fontWeight: 'bold'
     },
     title: {
         alignItems: 'center',

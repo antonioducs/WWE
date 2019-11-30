@@ -1,4 +1,4 @@
-import React, { useState }  from 'react';
+import React, { useState } from 'react';
 import { View, Animated, StyleSheet } from 'react-native';
 import { Header } from 'react-navigation-stack';
 import { SCREEN_HEIGHT, STATUSBAR_HEIGHT } from '../config/constants';
@@ -10,7 +10,7 @@ import HeaderHome from '../components/HeaderUser';
 import UserDetails from '../components/UserDetails';
 import ListAtividades from '../components/ListAtividades';
 
-const SUGGESTED_HEIGHT = SCREEN_HEIGHT / 3.5;
+const SUGGESTED_HEIGHT = SCREEN_HEIGHT / 3;
 const HIDE_HEIGHT = SUGGESTED_HEIGHT + Header.HEIGHT;
 
 export default function HomeScreen({ navigation }) {
@@ -24,17 +24,17 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.safeArea}>
-     <Animated.View
-                    style={{translateY}}
-                >
+      <Animated.View
+        style={{ translateY }}
+      >
         <View>
           <View style={styles.header}>
-            <HeaderHome navigation={navigation}/>
+            <HeaderHome navigation={navigation} />
           </View>
-          <UserDetails />
+          <UserDetails navigation={navigation} />
         </View>
         <View style={styles.tabsContainer}>
-            <ListAtividades scrollY={scrollY}/>
+          <ListAtividades scrollY={scrollY} />
         </View>
       </Animated.View>
     </View>
