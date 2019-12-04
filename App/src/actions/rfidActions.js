@@ -13,7 +13,6 @@ export const clearRfid = () => ({
 });
 
 export const loadRfid = rfid => {
-
     return async dispatch => {
         await firebase
             .database()
@@ -25,11 +24,12 @@ export const loadRfid = rfid => {
     }
 }
 
-export const saveNewUserRfid = (rfid, value) => {
+export const saveNewUserRfid = (rfid, value, name) => {
     const { currentUser } = firebase.auth();
 
     const cloneValue = value;
     cloneValue.userid = currentUser.uid;
+    clonedValue.name = name;
 
     return async dispatch => {
         await firebase
@@ -38,5 +38,30 @@ export const saveNewUserRfid = (rfid, value) => {
             .set(cloneValue)
 
         dispatch(clearRfid());
+    }
+}
+
+
+const SET_NEW_RFID = 'SET_NEW_RFID';
+const dispatchSetNewRfid = (rfid, apt) => ({
+    type: SET_NEW_RFID,
+    rfid,
+    apt
+});
+export const setNewRfid = (rfid, apt) => {
+
+    const data = {
+        apt: apt,
+        name: "",
+        userid: ""
+    }
+
+    return async dispatch => {
+        await firebase
+        .database()
+        .ref(`rfid/${rfid}`)
+        .set(data);
+
+        dispatch(dispatchSetNewRfid(rfid, apt));
     }
 }

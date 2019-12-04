@@ -22,6 +22,8 @@ export default function HomeScreen({ navigation }) {
     extrapolate: 'clamp'
   });
 
+
+
   return (
     <View style={styles.safeArea}>
       <Animated.View

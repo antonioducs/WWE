@@ -32,6 +32,7 @@ class UserDetailsScreen extends Component {
     };
 
     //faz uma copia local para salvar as alterações
+
     async componentDidMount() {
         this.rollBackUser();
 
@@ -49,7 +50,6 @@ class UserDetailsScreen extends Component {
             }
         }*/
     }
-
 
     _pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -71,18 +71,30 @@ class UserDetailsScreen extends Component {
 
     rollBackUser() {
         const { user } = this.props
-        const saveUser = {
-            name: user.name,
-            photo: user.photo,
-            apt: user.apt,
-            rfid: user.rfid,
-            horarios: user.horarios,
-            isAdmin: user.admin
-        };
+        let saveUser = {};
+        if (user.horarios != null) {
+            saveUser = {
+                name: user.name,
+                photo: user.photo,
+                apt: user.apt,
+                rfid: user.rfid,
+                horarios: user.horarios,
+                isAdmin: user.admin
+            }
+        }else{
+            saveUser = {
+                name: user.name,
+                photo: user.photo,
+                apt: user.apt,
+                rfid: user.rfid,
+                isAdmin: user.admin
+            }
+        }
         this.setState({
             user: saveUser
         })
     }
+
 
     onChangeName = value => {
         const attUser = this.state.user;
@@ -106,7 +118,7 @@ class UserDetailsScreen extends Component {
                         })
                         try {
                             if (this.state.user.rfid != this.props.user.rfid) { //verifica se foi alterado o card
-                                await this.props.saveNewUserRfid(this.state.user.rfid, this.props.rfid);
+                                await this.props.saveNewUserRfid(this.state.user.rfid, this.props.rfid, this.state.user.name);
                             }
                             await this.props.saveUser(this.state.user);
                             this.props.navigation.goBack();
@@ -260,17 +272,14 @@ class UserDetailsScreen extends Component {
     handleBarCodeScanned = async ({ data }) => {
         await this.props.loadRfid(data);
 
-        if (this.props.rfid.userid == null || this.props.rfid.userid == "") {
-            const attUser = this.state.user;
-            attUser.rfid = data;
-            attUser.apt = this.props.rfid.apt;
-            this.setState({
-                isScanQR: false,
-                user: attUser
-            });
-        } else {
-            Alert.alert('Esse cartão já está em uso!');
-        }
+        const attUser = this.state.user;
+        attUser.rfid = data;
+        attUser.apt = this.props.rfid.apt;
+        this.setState({
+            isScanQR: false,
+            user: attUser
+        });
+
     };
 
     viewScanQR() {

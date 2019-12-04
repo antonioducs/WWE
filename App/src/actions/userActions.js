@@ -44,6 +44,7 @@ export const processLogin = () => {
   }
 }
 
+
 export const newUser = () => {
 
   const { currentUser } = firebase.auth();
@@ -71,7 +72,7 @@ export const saveUser = user => {
 
   const { currentUser } = firebase.auth();
 
-  if(!user.isAdmin) user.isAdmin = false;
+  if (!user.isAdmin) user.isAdmin = false;
 
   return dispatch => {
     return new Promise(async (resolve, reject) => {
@@ -87,5 +88,46 @@ export const saveUser = user => {
         reject(error);
       }
     })
+  }
+}
+
+export const setUserNewReservationDay = (day, time, user) => {
+
+  const { currentUser } = firebase.auth();
+
+  if (user.horarios != null) {
+    user.horarios.push(day + "" + time);
+  }
+  else {
+    user = { ...user, horarios: [day + "" + time] }
+  }
+
+  return async dispatch => {
+    await firebase
+      .database()
+      .ref(`users/${currentUser.uid}`)
+      .set(user)
+      .then(
+        dispatch(saveUserSucess(user))
+      );  
+  }
+}
+
+export const deleteUserNewReservationDay = (day, time, user) => {
+
+  const { currentUser } = firebase.auth();
+
+  let index = user.horarios.indexOf(day + "" + time)
+  user.horarios.splice(index, 1);
+
+  return async dispatch => {
+    await firebase
+      .database()
+      .ref(`users/${currentUser.uid}`)
+      .set(user)
+      .then(
+        dispatch(saveUserSucess(user))
+      );  
+
   }
 }

@@ -66,6 +66,7 @@ const mapStateToProps = state => {
     return { user };
 }
 
+
 export default connect(mapStateToProps)(ListAtividades);
 
 const styles = StyleSheet.create({

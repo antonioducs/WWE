@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { CalendarList, LocaleConfig } from 'react-native-calendars';
 
 import { SCREEN_HEIGHT } from "../config/constants";
@@ -12,6 +12,7 @@ import { loadConfigs } from '../actions';
 class CalendarScreen extends Component {
 
     state = {
+        loadComplete: true,
         selectd: 1,
         mes: ['0', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
         ano: 2019,
@@ -20,18 +21,20 @@ class CalendarScreen extends Component {
 
     async componentDidMount() {
         await this.props.loadConfigs();
+
         const month = new Date().getMonth() + 1;
         const ano = new Date().getFullYear();
-        const outher = new Date().setDate(new Date().getDate() + this.props.configs.dias-2);
+        const outher = new Date().setDate(new Date().getDate() + this.props.configs.dias - 2);
 
         this.setState({
             selectd: month,
             ano: ano,
-            maxDias: outher
+            maxDias: outher,
+            loadComplete: false
         });
     }
 
-    monthChange = month => {        
+    monthChange = month => {
         const mes = month[0].month;
         const ano = month[0].year;
         this.setState({
@@ -50,6 +53,9 @@ class CalendarScreen extends Component {
             today: 'Hoje\'hj'
         };
         LocaleConfig.defaultLocale = 'pt';
+
+        if(this.state.loadComplete)
+            return(<ActivityIndicator />);
 
         return (
             <>
@@ -70,7 +76,7 @@ class CalendarScreen extends Component {
                             minDate={new Date()}
                             maxDate={this.state.maxDias}
                             monthFormat=""
-                            onDayPress={(day) => {this.props.navigation.navigate('TimesScreen', { day })}}
+                            onDayPress={(day) => { this.props.navigation.navigate('TimesScreen', { day }) }}
                             onVisibleMonthsChange={(month) => { this.monthChange(month) }} />
                     </View>
                 </View >

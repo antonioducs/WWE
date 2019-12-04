@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Text } from 'react-native';
+import { 
+    View, 
+    StyleSheet, 
+    Image, 
+    Text 
+} from 'react-native';
 
 import { SCREEN_HEIGHT } from '../config/constants';
 import theme from '../styles/theme';

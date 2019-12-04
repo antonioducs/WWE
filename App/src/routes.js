@@ -27,6 +27,17 @@ const AppNavigator = createStackNavigator(
         header: null
       }
     },
+
+    CalendarScreen: {
+      screen: CalendarScreen,
+      navigationOptions: {
+        headerTintColor: theme.secondaryColor,
+        headerStyle: {
+          backgroundColor: theme.primaryColor
+        }
+      }
+    },
+    
     UserDetailsScreen: {
       screen: UserDetailsScreen,
       navigationOptions: {
@@ -37,15 +48,7 @@ const AppNavigator = createStackNavigator(
         }
       }
     },
-    CalendarScreen: {
-      screen: CalendarScreen,
-      navigationOptions: {
-        headerTintColor: theme.secondaryColor,
-        headerStyle: {
-          backgroundColor: theme.primaryColor
-        }
-      }
-    },
+    
     TimesScreen: {
       screen: TimesScreen,
       navigationOptions: {
