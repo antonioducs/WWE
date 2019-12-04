@@ -8,8 +8,7 @@ import {
     Alert,
     ActivityIndicator,
     TextInput,
-    TouchableOpacity,
-    Dimensions
+    TouchableOpacity
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import { Camera } from 'expo-camera';
@@ -19,7 +18,11 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { connect } from 'react-redux';
 import { saveUser, loadRfid, saveNewUserRfid } from '../actions'
 
-const { height } = Dimensions.get('window');
+import IconCamera from '../../assets/camera.svg';
+import IconCartao from '../../assets/cartao.svg';
+import IconCodigo from '../../assets/codigo.svg';
+import IconVoltar from '../../assets/voltar.svg';
+
 
 import theme from '../styles/theme';
 import Ripple from 'react-native-material-ripple';
@@ -100,9 +103,9 @@ class UserDetailsScreen extends Component {
             return <ActivityIndicator />;
 
         return (
-            <View style={styles.button}>
-                <Button
-                    title='Salvar'
+            
+                <Ripple
+                    style={[styles.buttonSalCan, {marginTop:20}]}
                     onPress={async () => {
                         this.setState({
                             isLoading: true
@@ -121,30 +124,40 @@ class UserDetailsScreen extends Component {
                             })
                         }
                     }}
-                />
-            </View>
+                >
+                    <Text style={{color: 'white', fontSize: 20, fontWeight:'bold'}}>salvar</Text>
+                </Ripple>
+            
         );
     }
 
     viewForm() {
         return (
             <View style={styles.container}>
-                
+                <View style={{flexDirection:'row',alignItems:'center', paddingLeft: 40}}>
+                    <Ripple >
+                        <IconVoltar fill={'white'}/>
+                    </Ripple>
+                    <Text style={styles.txtTopo}>Editar Perfil</Text>
+                </View>
+
                 <View style={styles.viewImg}>
                     <Image
                         source={{ uri: `data: image/jpeg;base64,${this.state.user.photo}` }}
                         style={styles.img}
                     />
-
-                    <TextInput
+                </View>
+                
+                <Ripple style={[styles.button, {marginTop:35}]}>
+                    <IconCartao fill={'white'}/>
+                    <Text
                         style={styles.txt}
-                        placeholder="Seu nome"
                         value={this.state.user.name}
                         onChangeText={value => this.onChangeName(value)}
-                    />
-                    
-                </View>
-
+                    >
+                        Alterar nome
+                    </Text>
+                </Ripple>
                 
                 <Ripple 
                        style={styles.button}
@@ -169,39 +182,35 @@ class UserDetailsScreen extends Component {
                             )
                         }}
                     >
-                        <Text>Alterar foto</Text>
+                        <IconCamera fill={'white'}/>
+                        <Text style={styles.txt}>Alterar foto</Text>
+                </Ripple>
+
+        
+                <Ripple
+                    style={styles.button}
+                    title='Alterar '
+                    onPress={() =>
+                        this.setState({ isScanQR: true })
+                    }
+                >
+                    <IconCodigo fill={'white'}/>
+                    <Text style={styles.txt}>Ler código QR</Text>
                 </Ripple>
                 
-                    
-
-                <View style={styles.viewApt}>
-                    <Text style={styles.txt}>Apartamento:
-                      {this.state.user.apt ?
-                            this.state.user.apt
-                            : 'Nda'}
-                    </Text>
-
-                    <View style={{ marginLeft: 2 }}>
-                        <Button
-                            title='Alterar '
-                            onPress={() =>
-                                this.setState({ isScanQR: true })
-                            }
-                        />
-                    </View>
-                </View>
-
-                {this.renderButton()}
-                <View style={styles.button}>
-                    <Button
-                        style={styles.button}
-                        color='red'
-                        title='Cancelar'
+                <View>
+                    {this.renderButton()}
+                
+                    <Ripple
+                        style={styles.buttonSalCan}
                         onPress={() => {
                             this.rollBackUser();
                             this.props.navigation.goBack();
                         }}
-                    />
+                    >
+                        <Text style={{color: 'white', fontSize: 20, fontWeight:'bold'}}>cancelar</Text>
+                    </Ripple>
+               
                 </View>
             </View>
         );
@@ -348,34 +357,23 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: theme.secondaryColor,
+        backgroundColor: '#2b2f33',
+        justifyContent: 'center'
     },
     img: {
         borderRadius: 60,
-        height: 100,
-        width: 100,
+        height: 120,
+        width: 120,
         marginTop: 20,
         marginRight: 20,
         marginLeft: 20
     },
+    editText:{
+        fontSize: 20        
+    },
     viewImg: {
-        backgroundColor: theme.primaryColor,
-        height: (height / 3) - 10,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-        paddingLeft: 20,
-        paddingRight: 20,
-        shadowColor: "#000",
-        shadowOffset: {
-	        width: 0,
-	        height: 1,
-        },
-        shadowOpacity: 0.22,
-        shadowRadius: 2.22,
-        elevation: 3,
         alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%'
+        paddingHorizontal: 110
     },
     viewTxt: {
         alignItems: 'center',
@@ -388,9 +386,13 @@ const styles = StyleSheet.create({
     },
     txt: {
         color: theme.secondaryColor,
-        fontSize: 25,
-        fontWeight: 'bold',
-        marginTop: 20,
+        fontSize: 20,
+        marginLeft: 20
+    },
+    txtTopo: {
+        color: theme.secondaryColor,
+        fontSize: 20,
+        marginLeft: 15
     },
     viewApt: {
         marginTop: 20,
@@ -398,17 +400,30 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
     },
-    button: {
-        backgroundColor: theme.secondaryColor,
-        height: 50,
-        marginHorizontal: 20,
-        borderRadius: 35,
+    button: { 
+        height: 45,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: 120,
+        padding: 10
+    },
+
+    buttonSalCan: {
+        height: 30,
+        marginHorizontal: 130,
+        borderRadius: 55,
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 5,
-        shadowColor: 'black',
-        shadowOpacity: 0.2,
-        elevation: 4
-      }
+        shadowColor: "#000",
+        shadowOffset: {
+	        width: 0,
+	        height: 1,
+        },
+        shadowOpacity: 0.20,
+        shadowRadius: 1.41,
+        elevation: 2,
+        backgroundColor: 'black',
+    }
 });
 
