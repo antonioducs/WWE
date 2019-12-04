@@ -7,9 +7,7 @@ import {
     Button,
     Alert,
     ActivityIndicator,
-    TextInput,
-    TouchableOpacity,
-    Dimensions
+    TouchableOpacity
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import { Camera } from 'expo-camera';
@@ -18,8 +16,13 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 import { connect } from 'react-redux';
 import { saveUser, loadRfid, saveNewUserRfid } from '../actions'
+import { SCREEN_HEIGHT } from '../config/constants';
 
-const { height } = Dimensions.get('window');
+import IconCamera from '../../assets/camera.svg';
+import IconCartao from '../../assets/cartao.svg';
+import IconCodigo from '../../assets/codigo.svg';
+import IconVoltar from '../../assets/voltar.svg';
+
 
 import theme from '../styles/theme';
 import Ripple from 'react-native-material-ripple';
@@ -112,119 +115,117 @@ class UserDetailsScreen extends Component {
             return <ActivityIndicator />;
 
         return (
-            <Ripple style={{...styles.button, backgroundColor: 'blue'}}
-                onPress={async () => {
-                    this.setState({
-                        isLoading: true
-                    })
-                    try {
-                        if (this.state.user.rfid != this.props.user.rfid) { //verifica se foi alterado o card
-                            await this.props.saveNewUserRfid(this.state.user.rfid, this.props.rfid, this.state.user.name);
-                        }
-                        await this.props.saveUser(this.state.user);
-                        this.props.navigation.goBack();
-                    } catch (error) {
-                        Alert.alert('Erro', error.message);
-                    } finally {
+            
+                <Ripple
+                    style={[styles.buttonSalCan, {marginTop:20}]}
+                    onPress={async () => {
                         this.setState({
                             isLoading: false
                         })
-                    }
-                }}>
-                <Text style={{
-                    color: 'white',
-                    fontSize: 20,
-                    fontWeight: 'bold'
-                }}>Salvar</Text>
-            </Ripple>
+                        try {
+                            if (this.state.user.rfid != this.props.user.rfid) { //verifica se foi alterado o card
+                                await this.props.saveNewUserRfid(this.state.user.rfid, this.props.rfid);
+                            }
+                            await this.props.saveUser(this.state.user);
+                            this.props.navigation.goBack();
+                        } catch (error) {
+                            Alert.alert('Erro', error.message);
+                        } finally {
+                            this.setState({
+                                isLoading: false
+                            })
+                        }
+                    }}
+                >
+                    <Text style={{color: 'white', fontSize: 20, fontWeight:'bold'}}>salvar</Text>
+                </Ripple>
+            
         );
     }
 
     viewForm() {
         return (
             <View style={styles.container}>
+                <View style={{flexDirection:'row',alignItems:'center', paddingLeft: 40}}>
+                    <Ripple 
+                        onPress={() => this.props.navigation.goBack()}    
+                    >
+                        <IconVoltar fill={'white'}/>
+                    </Ripple>
+                    <Text style={styles.txtTopo}>Editar Perfil</Text>
+                </View>
 
                 <View style={styles.viewImg}>
                     <Image
                         source={{ uri: `data: image/jpeg;base64,${this.state.user.photo}` }}
                         style={styles.img}
                     />
-
-                    <TextInput
+                </View>
+                
+                <Ripple style={[styles.button, {marginTop:35}]}>
+                    <IconCartao fill={'white'}/>
+                    <Text
                         style={styles.txt}
-                        placeholder="Seu nome"
                         value={this.state.user.name}
                         onChangeText={value => this.onChangeName(value)}
-                    />
-                </View>
+                    >
+                        Alterar nome
+                    </Text>
+                </Ripple>
+                
+                <Ripple 
+                       style={styles.button}
+                        onPress={() => {
+                            Alert.alert(
+                                'Capturar Imagem',
+                                'De onde você deseja obter a imagem?',
+                                [
+                                    {
+                                        text: 'Camera',
+                                        onPress: () => {
+                                            this.setState({ isCamera: true })
+                                        }
+                                    },
+                                    {
+                                        text: 'Galeria',
+                                        onPress: () => {
+                                            this._pickImage();
+                                        }
+                                    }
+                                ]
+                            )
+                        }}
+                    >
+                        <IconCamera fill={'white'}/>
+                        <Text style={styles.txt}>Alterar foto</Text>
+                </Ripple>
 
-
+        
                 <Ripple
                     style={styles.button}
-                    onPress={() => {
-                        Alert.alert(
-                            'Capturar Imagem',
-                            'De onde você deseja obter a imagem?',
-                            [
-                                {
-                                    text: 'Camera',
-                                    onPress: () => {
-                                        this.setState({ isCamera: true })
-                                    }
-                                },
-                                {
-                                    text: 'Galeria',
-                                    onPress: () => {
-                                        this._pickImage();
-                                    }
-                                }
-                            ]
-                        )
-                    }}
+                    title='Alterar '
+                    onPress={() =>
+                        this.setState({ isScanQR: true })
+                    }
                 >
-                    <Text style={{
-                        color: 'black',
-                        fontSize: 20,
-                        fontWeight: 'bold'
-                    }}>Alterar foto</Text>
+                    <IconCodigo fill={'white'}/>
+                    <Text style={styles.txt}>Ler código QR</Text>
                 </Ripple>
-
-
-
-                <View style={styles.viewApt}>
-                    <Text style={{
-                        ...styles.txt, 
-                        color: 'black',
-                        marginTop: 0
-                    }}>Apartamento:
-                      {this.state.user.apt ?
-                            this.state.user.apt
-                            : 'Nda'}
-                    </Text>
-
-                    <View style={{ marginLeft: 5 }}>
-                        <Button
-                            title='Alterar '
-                            onPress={() =>
-                                this.setState({ isScanQR: true })
-                            }
-                        />
-                    </View>
+                
+                <View>
+                    {this.renderButton()}
+                
+                    <Ripple
+                        style={{...styles.buttonSalCan, backgroundColor: 'red'}}
+                        onPress={() => {
+                            this.rollBackUser();
+                            this.props.navigation.goBack();
+                        }}
+                    >
+                        <Text style={{color: 'white', fontSize: 20, fontWeight:'bold'}}>cancelar</Text>
+                    </Ripple>
+               
                 </View>
-
-                {this.renderButton()}
-                <Ripple style={{...styles.button, backgroundColor: 'red'}}
-                    onPress={() => {
-                        this.rollBackUser();
-                        this.props.navigation.goBack();
-                    }}
-                >
-                    <Text style={{
-                        color: 'white',
-                        fontSize: 20,
-                        fontWeight: 'bold'
-                    }}>Cancelar</Text>
-                </Ripple>
             </View>
         );
     }
@@ -367,19 +368,23 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: theme.secondaryColor,
+        backgroundColor: '#2b2f33',
+        justifyContent: 'center'
     },
     img: {
         borderRadius: 60,
-        height: 100,
-        width: 100,
+        height: 120,
+        width: 120,
         marginTop: 20,
         marginRight: 20,
         marginLeft: 20
     },
+    editText:{
+        fontSize: 20        
+    },
     viewImg: {
         backgroundColor: theme.primaryColor,
-        height: (height / 3) - 10,
+        height: (SCREEN_HEIGHT / 3) - 10,
         borderBottomLeftRadius: 15,
         borderBottomRightRadius: 15,
         paddingLeft: 20,
@@ -393,8 +398,7 @@ const styles = StyleSheet.create({
         shadowRadius: 2.22,
         elevation: 3,
         alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%'
+        paddingHorizontal: 110
     },
     viewTxt: {
         alignItems: 'center',
@@ -407,9 +411,13 @@ const styles = StyleSheet.create({
     },
     txt: {
         color: theme.secondaryColor,
-        fontSize: 25,
-        fontWeight: 'bold',
-        marginTop: 20,
+        fontSize: 20,
+        marginLeft: 20
+    },
+    txtTopo: {
+        color: theme.secondaryColor,
+        fontSize: 20,
+        marginLeft: 15
     },
     viewApt: {
         borderColor: 'black',
@@ -421,17 +429,33 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
     },
-    button: {
-        backgroundColor: theme.secondaryColor,
-        height: 50,
-        marginHorizontal: 20,
-        borderRadius: 35,
+    button: { 
+        height: 45,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: 120,
+        padding: 10
+    },
+
+    buttonSalCan: {
+        height: 30,
+        marginHorizontal: 130,
+        borderRadius: 55,
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 5,
         shadowColor: 'black',
         shadowOpacity: 0.2,
-        elevation: 4
+        elevation: 4,
+        shadowColor: "#000",
+        shadowOffset: {
+	        width: 0,
+	        height: 1,
+        },
+        shadowOpacity: 0.20,
+        shadowRadius: 1.41,
+        elevation: 2,
+        backgroundColor: 'black',
     }
 });
 
