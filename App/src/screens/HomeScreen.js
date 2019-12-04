@@ -28,9 +28,6 @@ export default function HomeScreen({ navigation }) {
         style={{ translateY }}
       >
         <View>
-          <View style={styles.header}>
-            <HeaderHome navigation={navigation} />
-          </View>
           <UserDetails navigation={navigation} />
         </View>
         <View style={styles.tabsContainer}>
@@ -47,7 +44,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.backgroundGray
+    backgroundColor: theme.secondaryColor
   },
   card: {
     flexDirection: 'column',

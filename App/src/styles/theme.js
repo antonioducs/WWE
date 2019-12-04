@@ -1,7 +1,7 @@
 
 
 export default theme = {
-    primaryColor: '#555ED6',
+    primaryColor: '#4071f4',
     secondaryColor: '#fff',
     outherColor: '#3647BF',
     darktGray: '#757575',

@@ -8,7 +8,7 @@ import {
 import Ripple from 'react-native-material-ripple';
 import IconMaquina from '../../assets/maquina.svg';
 
-export default class CardHorario extends Component {
+export default class  CardHorario extends Component {
 
     render() {
         return (
@@ -20,16 +20,20 @@ export default class CardHorario extends Component {
                 rippleContainerBorderRadius={20}
                 onPress={this.props.onPress}>
                 <View style={styles.contentCard} >
-                    <IconMaquina fill={this.props.secondaryColor} />
+                    <IconMaquina fill={'#4071f4'} />
+                    <View>
+                        <Text style={{fontWeight: 'bold', fontSize: 16}}>Dia: </Text>
+                        <Text style={{fontWeight: 'bold', fontSize: 16}}>Horário: </Text>
+                    </View>
                     <View>
 
                         <Text
-                            style={[styles.txtCard, {color: this.props.secondaryColor}]}
+                            style={styles.txtCard}
                         >
-                            Dia {this.props.date}
+                             {this.props.date}
                         </Text>
                         <Text
-                            style={[styles.txtCard, {color: this.props.secondaryColor}]}
+                            style={styles.txtCard}
                         >
                             {this.props.time}
                         </Text>
@@ -45,20 +49,31 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        height: 130,
+        height: 100,
         borderRadius: 10,
-        padding: 15,
-        margin: 8,
-        marginVertical: 4
+        marginHorizontal: 30,
+        marginBottom: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+	        width: 0,
+	        height: 3,
+        },
+        shadowOpacity: 0.27,
+        shadowRadius: 4.65,
+        elevation: 6,
+        borderColor: '#9cb5f9',
+        borderWidth: 0.8,
+        },
+    txtCard: {
+        fontSize: 16
     },
     contentCard: {
         width: '100%',
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        marginVertical: 15
-    },
-    txtCard: {
+        alignItems: 'center',
+        justifyContent: 'space-around',   
+        padding: 20,
         fontSize: 16,
         fontWeight: 'bold'
     },

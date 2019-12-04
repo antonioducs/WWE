@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { View, StyleSheet, Text, Animated } from 'react-native';
+import { View, StyleSheet, Text, Animated, Dimensions } from 'react-native';
 import Lottie from 'lottie-react-native';
 
 import theme from '../styles/theme';
@@ -7,17 +7,40 @@ import CardHorario from './CardHorario';
 import notFoundAnimation from '../../assets/animations/notFoundAnimation.json';
 
 import { connect } from 'react-redux';
+import Ripple from 'react-native-material-ripple';
+
+const { height } = Dimensions.get('window');
 
 class ListAtividades extends Component {
 
     render() {
 
+        openCalendar = () => {
+            this.props.navigation.navigate('CalendarScreen');
+        }
+
         return (
             <View style={styles.safeArea}>
-                <View style={styles.title}>
-                    <Text style={styles.txtTitle}>Atividades</Text>
+                <Ripple 
+                    style={styles.button}
+                    onPress={() => this.props.navigation.navigate('UserDetailsScreen')}
+                >
+                    <Text style={styles.txtTitle}>Agendar um Horário</Text>
+                </Ripple>
+
+                <View >
+                    <Text style={{fontSize:15, color:'black', 
+                        flexDirection: 'row', 
+                        marginTop: 10, 
+                        marginLeft: 30, 
+                        marginBottom: 5, 
+                        fontWeight: 'bold'}}
+                    >
+                        Atividades: 
+                    </Text>
                 </View>
                 <Animated.ScrollView
+                    style={{height: height}}
                     showsVerticalScrollIndicator={false}
                     scrollEventThrottle={16}
                     onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: this.props.scrollY } } }], {
@@ -35,8 +58,8 @@ class ListAtividades extends Component {
                                 <Fragment key={key.toString()}>
                                     <View>
                                         <CardHorario
-                                            primaryColor={primaryColor}
-                                            secondaryColor={secondaryColor}
+                                            primaryColor={'white'}
+                                            secondaryColor={'white'}
                                             date={date}
                                             time={time}
                                             onPress={() => console.log('Press Card')}
@@ -82,8 +105,27 @@ const styles = StyleSheet.create({
     },
     txtTitle: {
         padding: 4,
-        color: theme.primaryColor,
-        fontWeight: 'bold',
-        fontSize: 16
+        color: 'black',
+        fontSize: 18,
+        
     },
+    button: {
+        backgroundColor: theme.secondaryColor,
+        height: 50,
+        marginHorizontal: 50,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+	        width: 0,
+	        height: 1,
+        },
+        shadowOpacity: 0.20,
+        shadowRadius: 1.41,
+        elevation: 2,
+        marginTop: 20,
+        marginBottom: 10
+      },
 })

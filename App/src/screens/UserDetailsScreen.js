@@ -5,11 +5,11 @@ import {
     StyleSheet,
     Image,
     Button,
-    KeyboardAvoidingView,
     Alert,
     ActivityIndicator,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    Dimensions
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import { Camera } from 'expo-camera';
@@ -19,7 +19,10 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { connect } from 'react-redux';
 import { saveUser, loadRfid, saveNewUserRfid } from '../actions'
 
+const { height } = Dimensions.get('window');
+
 import theme from '../styles/theme';
+import Ripple from 'react-native-material-ripple';
 
 class UserDetailsScreen extends Component {
 
@@ -125,22 +128,26 @@ class UserDetailsScreen extends Component {
 
     viewForm() {
         return (
-            <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-                <View style={styles.viewTxt}>
+            <View style={styles.container}>
+                
+                <View style={styles.viewImg}>
+                    <Image
+                        source={{ uri: `data: image/jpeg;base64,${this.state.user.photo}` }}
+                        style={styles.img}
+                    />
+
                     <TextInput
                         style={styles.txt}
                         placeholder="Seu nome"
                         value={this.state.user.name}
                         onChangeText={value => this.onChangeName(value)}
                     />
+                    
                 </View>
-                <View style={styles.viewImg}>
-                    <Image
-                        source={{ uri: `data: image/jpeg;base64,${this.state.user.photo}` }}
-                        style={styles.img}
-                    />
-                    <Button
-                        title='Alterar Foto'
+
+                
+                <Ripple 
+                       style={styles.button}
                         onPress={() => {
                             Alert.alert(
                                 'Capturar Imagem',
@@ -161,8 +168,11 @@ class UserDetailsScreen extends Component {
                                 ]
                             )
                         }}
-                    />
-                </View>
+                    >
+                        <Text>Alterar foto</Text>
+                </Ripple>
+                
+                    
 
                 <View style={styles.viewApt}>
                     <Text style={styles.txt}>Apartamento:
@@ -193,7 +203,7 @@ class UserDetailsScreen extends Component {
                         }}
                     />
                 </View>
-            </KeyboardAvoidingView>
+            </View>
         );
     }
 
@@ -339,18 +349,33 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.secondaryColor,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
     },
     img: {
-        height: '86%',
-        width: '100%',
+        borderRadius: 60,
+        height: 100,
+        width: 100,
+        marginTop: 20,
+        marginRight: 20,
+        marginLeft: 20
     },
     viewImg: {
-        height: 250,
-        width: 250,
-        borderColor: theme.primaryColor,
-        borderWidth: 2
+        backgroundColor: theme.primaryColor,
+        height: (height / 3) - 10,
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
+        paddingLeft: 20,
+        paddingRight: 20,
+        shadowColor: "#000",
+        shadowOffset: {
+	        width: 0,
+	        height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+        elevation: 3,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%'
     },
     viewTxt: {
         alignItems: 'center',
@@ -362,9 +387,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2
     },
     txt: {
-        color: theme.primaryColor,
-        fontSize: 18,
-        fontWeight: 'bold'
+        color: theme.secondaryColor,
+        fontSize: 25,
+        fontWeight: 'bold',
+        marginTop: 20,
     },
     viewApt: {
         marginTop: 20,
@@ -373,9 +399,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     button: {
-        width: 250,
-        margin: 10,
-    }
-
+        backgroundColor: theme.secondaryColor,
+        height: 50,
+        marginHorizontal: 20,
+        borderRadius: 35,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 5,
+        shadowColor: 'black',
+        shadowOpacity: 0.2,
+        elevation: 4
+      }
 });
 

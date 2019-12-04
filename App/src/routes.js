@@ -30,11 +30,7 @@ const AppNavigator = createStackNavigator(
     UserDetailsScreen: {
       screen: UserDetailsScreen,
       navigationOptions: {
-        title: 'Suas Informações',
-        headerTintColor: theme.secondaryColor,
-        headerStyle: {
-          backgroundColor: theme.primaryColor
-        }
+        header: null
       }
     },
     CalendarScreen: {
