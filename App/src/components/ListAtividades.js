@@ -26,7 +26,7 @@ class ListAtividades extends Component {
 
         const copyUser = {...this.props.user};
 
-        if (copyUser.horarios && copyUser.horarios.length) {
+        if (copyUser.horarios != null && copyUser.horarios.length) {
             copyUser.horarios.map(async (item) => {
                 if (month >= parseInt(item.substr(2, 2)) && day > parseInt(item.substr(0, 2))
                     && year >= parseInt(item.substr(4, 4))) {
@@ -67,9 +67,9 @@ class ListAtividades extends Component {
                         useNativeDriver: true
                     })}
                 >
-                    {(this.props.user.horarios
-                        && this.props.user.horarios.length
-                        && this.props.user.horarios.map((item, key) => {
+                    {(this.props.user.horarios != null
+                        && this.props.user.horarios.length) ?
+                         this.props.user.horarios.map((item, key) => {
                             const date = item.substr(0, 2) + "/" + item.substr(2, 2) + "/" + item.substr(4, 4);
                             const time = item.substr(8, 2) + ":" + item.substr(10, 2);
                             return (
@@ -85,7 +85,7 @@ class ListAtividades extends Component {
                                     </View>
                                 </Fragment>
                             );
-                        })) ||
+                        }) :
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <Text>Nenhuma atividade por aqui.</Text>
                         </View>

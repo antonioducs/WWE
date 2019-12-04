@@ -115,42 +115,43 @@ class UserDetailsScreen extends Component {
             return <ActivityIndicator />;
 
         return (
-            
-                <Ripple
-                    style={[styles.buttonSalCan, {marginTop:20}]}
-                    onPress={async () => {
+
+            <Ripple
+                style={[styles.buttonSalCan, { marginTop: 20 }]}
+                onPress={async () => {
+                    this.setState({
+                        isLoading: false
+                    })
+                    try {
+                        if (this.state.user.rfid != this.props.user.rfid) { //verifica se foi alterado o card
+                            await this.props.saveNewUserRfid(this.state.user.rfid,
+                                this.state.user.apt, this.state.user.name);
+                        }
+                        await this.props.saveUser(this.state.user);
+                        this.props.navigation.goBack();
+                    } catch (error) {
+                        Alert.alert('Erro', error.message);
+                    } finally {
                         this.setState({
                             isLoading: false
                         })
-                        try {
-                            if (this.state.user.rfid != this.props.user.rfid) { //verifica se foi alterado o card
-                                await this.props.saveNewUserRfid(this.state.user.rfid, this.props.rfid);
-                            }
-                            await this.props.saveUser(this.state.user);
-                            this.props.navigation.goBack();
-                        } catch (error) {
-                            Alert.alert('Erro', error.message);
-                        } finally {
-                            this.setState({
-                                isLoading: false
-                            })
-                        }
-                    }}
-                >
-                    <Text style={{color: 'white', fontSize: 20, fontWeight:'bold'}}>salvar</Text>
-                </Ripple>
-            
+                    }
+                }}
+            >
+                <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>salvar</Text>
+            </Ripple>
+
         );
     }
 
     viewForm() {
         return (
             <View style={styles.container}>
-                <View style={{flexDirection:'row',alignItems:'center', paddingLeft: 40}}>
-                    <Ripple 
-                        onPress={() => this.props.navigation.goBack()}    
+                <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 40 }}>
+                    <Ripple
+                        onPress={() => this.props.navigation.goBack()}
                     >
-                        <IconVoltar fill={'white'}/>
+                        <IconVoltar fill={'white'} />
                     </Ripple>
                     <Text style={styles.txtTopo}>Editar Perfil</Text>
                 </View>
@@ -161,9 +162,9 @@ class UserDetailsScreen extends Component {
                         style={styles.img}
                     />
                 </View>
-                
-                <Ripple style={[styles.button, {marginTop:35}]}>
-                    <IconCartao fill={'white'}/>
+
+                <Ripple style={[styles.button, { marginTop: 35 }]}>
+                    <IconCartao fill={'white'} />
                     <Text
                         style={styles.txt}
                         value={this.state.user.name}
@@ -172,35 +173,35 @@ class UserDetailsScreen extends Component {
                         Alterar nome
                     </Text>
                 </Ripple>
-                
-                <Ripple 
-                       style={styles.button}
-                        onPress={() => {
-                            Alert.alert(
-                                'Capturar Imagem',
-                                'De onde você deseja obter a imagem?',
-                                [
-                                    {
-                                        text: 'Camera',
-                                        onPress: () => {
-                                            this.setState({ isCamera: true })
-                                        }
-                                    },
-                                    {
-                                        text: 'Galeria',
-                                        onPress: () => {
-                                            this._pickImage();
-                                        }
+
+                <Ripple
+                    style={styles.button}
+                    onPress={() => {
+                        Alert.alert(
+                            'Capturar Imagem',
+                            'De onde você deseja obter a imagem?',
+                            [
+                                {
+                                    text: 'Camera',
+                                    onPress: () => {
+                                        this.setState({ isCamera: true })
                                     }
-                                ]
-                            )
-                        }}
-                    >
-                        <IconCamera fill={'white'}/>
-                        <Text style={styles.txt}>Alterar foto</Text>
+                                },
+                                {
+                                    text: 'Galeria',
+                                    onPress: () => {
+                                        this._pickImage();
+                                    }
+                                }
+                            ]
+                        )
+                    }}
+                >
+                    <IconCamera fill={'white'} />
+                    <Text style={styles.txt}>Alterar foto</Text>
                 </Ripple>
 
-        
+
                 <Ripple
                     style={styles.button}
                     title='Alterar '
@@ -208,23 +209,23 @@ class UserDetailsScreen extends Component {
                         this.setState({ isScanQR: true })
                     }
                 >
-                    <IconCodigo fill={'white'}/>
+                    <IconCodigo fill={'white'} />
                     <Text style={styles.txt}>Ler código QR</Text>
                 </Ripple>
-                
+
                 <View>
                     {this.renderButton()}
-                
+
                     <Ripple
-                        style={{...styles.buttonSalCan, backgroundColor: 'red'}}
+                        style={{ ...styles.buttonSalCan, backgroundColor: 'red' }}
                         onPress={() => {
                             this.rollBackUser();
                             this.props.navigation.goBack();
                         }}
                     >
-                        <Text style={{color: 'white', fontSize: 20, fontWeight:'bold'}}>cancelar</Text>
+                        <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>cancelar</Text>
                     </Ripple>
-               
+
                 </View>
             </View>
         );
@@ -291,6 +292,7 @@ class UserDetailsScreen extends Component {
     }
 
     handleBarCodeScanned = async ({ data }) => {
+        console.log(data);
         await this.props.loadRfid(data);
 
         const attUser = this.state.user;
@@ -300,7 +302,6 @@ class UserDetailsScreen extends Component {
             isScanQR: false,
             user: attUser
         });
-
     };
 
     viewScanQR() {
@@ -379,8 +380,8 @@ const styles = StyleSheet.create({
         marginRight: 20,
         marginLeft: 20
     },
-    editText:{
-        fontSize: 20        
+    editText: {
+        fontSize: 20
     },
     viewImg: {
         backgroundColor: theme.primaryColor,
@@ -429,7 +430,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
     },
-    button: { 
+    button: {
         height: 45,
         flexDirection: 'row',
         alignItems: 'center',
@@ -449,8 +450,8 @@ const styles = StyleSheet.create({
         elevation: 4,
         shadowColor: "#000",
         shadowOffset: {
-	        width: 0,
-	        height: 1,
+            width: 0,
+            height: 1,
         },
         shadowOpacity: 0.20,
         shadowRadius: 1.41,

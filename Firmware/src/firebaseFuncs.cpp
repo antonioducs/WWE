@@ -36,7 +36,7 @@ bool verificaReserva(String rfid)
     {
         if (firebaseData.dataType() == "string")
         {
-            uid = firebaseData.stringData(); //obtem id do usuário que possui esse rfid
+            uid = firebaseData.stringData();                                    //obtem id do usuário que possui esse rfid
             if (Firebase.getArray(firebaseData, "/users/" + uid + "/horarios")) //procura horário do usuario por sua ID
             {
                 Serial.println();
@@ -56,9 +56,8 @@ bool verificaReserva(String rfid)
                                 minuto = (jsonData.stringValue.charAt(10) - 48) * 10 + jsonData.stringValue.charAt(11) - 48;
                                 if ((data.hora == hora && data.min >= minuto) || data.hora > hora) //confere horários
                                 {
-                                    int dif = (hora * 60 + minuto) -(data.hora * 60 + data.min +  configs.tempoCicloEmMinutos);
-                                    Serial.println(dif);
-                                    if(dif > configs.tempoMinimo)
+                                    int dif = ((hora * 60) + minuto + configs.tempoCicloEmMinutos) - ((data.hora * 60) + data.min);
+                                    if (dif > configs.tempoMinimo)
                                         return true;
                                 }
                             }

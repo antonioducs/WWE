@@ -16,33 +16,46 @@ void setup()
   Udp.begin(8888);
 
   pinMode(LED_RED, OUTPUT);
+  pinMode(LED_BLUE, OUTPUT);
+  pinMode(RELE, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
-  pinMode(AMP, INPUT);
+
+  digitalWrite(RELE, HIGH);
+  digitalWrite(LED_GREEN, LOW);
 
   connectWifi();
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
   Firebase.reconnectWiFi(true);
 
   //carrega as configurações do firebase
-  while(!getConfigs()){
+  while (!getConfigs())
+  {
     delay(1000);
-    Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);    
-  }  
+    Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  }
   Serial.println("Configs carregasdas!");
-  configs.ligada = false;
- }
+}
 
+unsigned long lastTimeAmp = 0;
+int amp = 0;
 
 void loop()
 {
   localTime(&data.segundo, &data.min, &data.hora, &data.dia, &data.dia_semana, &data.mes, &data.ano);
 
-  /* if (millis() - lastTimeAmp >= 10000)
+  if (configs.ligada && (millis() - lastTimeAmp) >= 2000)
   {
-    amperagem = (((((analogRead(AMP) * 0.004882812) - 2.5) * 1000) / 66) / 1.41421356);
-  }*/
+    lastTimeAmp = millis();
+    amp = analogRead(A0);
+    Serial.println(amp);
+    //if(amp > 500){
+  //    configs.ligada = false;
+   //   digitalWrite(LED_GREEN, LOW);
+   //   digitalWrite(RELE, HIGH);
+ //   }
+  }
 
-  if (/*!configs.ligada &&*/ mfrc522.PICC_IsNewCardPresent())
+  if (!configs.ligada && mfrc522.PICC_IsNewCardPresent())
   {
     if (mfrc522.PICC_ReadCardSerial())
     {
@@ -58,12 +71,11 @@ void loop()
         delay(200);
       }
       Serial.println();
-      if(verificaReserva(rfid)){
-        configs.ligada = true;
+      if (verificaReserva(rfid))
+      {
         digitalWrite(LED_GREEN, HIGH);
-      }else{
-        configs.ligada = false;
-        digitalWrite(LED_GREEN, LOW);
+        digitalWrite(RELE, LOW);
+        configs.ligada = true;
       }
     }
   }
