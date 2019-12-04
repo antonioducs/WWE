@@ -37,7 +37,6 @@ export const setNewReservationDay = async (day, time, user) => {
 }
 
 export const deleteReservationDay = async (day, time) => {
-
     await firebase
         .database()
         .ref(`/reservas/"${day}"/"${time}"`)

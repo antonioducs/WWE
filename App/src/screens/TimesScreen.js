@@ -37,6 +37,13 @@ class TimesScreen extends Component {
     };
 
     componentDidMount() {
+        const data = new Date();
+
+        const { day } = this.props.navigation.state.params;
+        const dSemana = new Date(day.year, (day.month - 1), day.day)
+
+        let refDay = "" + (day.day < 10 ? "0" + day.day : day.day) +
+            (day.month < 10 ? "0" + day.month : day.month) + day.year;
 
         var min = parseInt(this.props.configs.horaMin.substr(0, 2)) * 60 + parseInt(
             this.props.configs.horaMin.substr(2, 2));
@@ -45,22 +52,29 @@ class TimesScreen extends Component {
             this.props.configs.horaMax.substr(2, 2)
         );
 
+        let hoje = false
+        if (data.getDate() === day.day
+            && (data.getMonth() + 1) === day.month) {
+            hoje = true;
+        }
+        
         const { tempoCicloEmMinutos } = this.props.configs;
         const listaHorarios = [];
+
         while (min <= max) {
             var hora = parseInt(min / 60);
             var minuto = min % 60;
-            listaHorarios.push("" + (hora < 10 ? ("0" + hora) : hora) + "h" +
-                (minuto < 10 ? ("0" + minuto) : minuto) + "min"
-            );
+            if (hoje) {
+                if (data.getHours() <= hora){
+                    listaHorarios.push("" + (hora < 10 ? ("0" + hora) : hora) + "h" +
+                        (minuto < 10 ? ("0" + minuto) : minuto) + "min");
+                }
+            } else {
+                listaHorarios.push("" + (hora < 10 ? ("0" + hora) : hora) + "h" +
+                    (minuto < 10 ? ("0" + minuto) : minuto) + "min");
+            }
             min = parseInt(min + tempoCicloEmMinutos);
         }
-
-        const { day } = this.props.navigation.state.params;
-        const dSemana = new Date(day.year, (day.month - 1), day.day)
-
-        let refDay = "" + (day.day < 10 ? "0" + day.day : day.day) +
-            (day.month < 10 ? "0" + day.month : day.month) + day.year;
 
         this.props.loadReservationsDay(refDay);
 

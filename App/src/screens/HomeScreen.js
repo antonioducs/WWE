@@ -1,55 +1,46 @@
-import React, { useState } from 'react';
-import { View, Animated, StyleSheet } from 'react-native';
+import React, { Component } from 'react';
+import { View, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { Header } from 'react-navigation-stack';
 import { SCREEN_HEIGHT, STATUSBAR_HEIGHT } from '../config/constants';
+import { FAB } from 'react-native-paper';
 
 import theme from '../styles/theme';
 
-
-import HeaderHome from '../components/HeaderUser';
 import UserDetails from '../components/UserDetails';
 import ListAtividades from '../components/ListAtividades';
+
 
 const SUGGESTED_HEIGHT = SCREEN_HEIGHT / 3;
 const HIDE_HEIGHT = SUGGESTED_HEIGHT + Header.HEIGHT;
 
-export default function HomeScreen({ navigation }) {
-  const [scrollY] = useState(new Animated.Value(0));
+export default class HomeScreen extends Component {
 
-  const translateY = scrollY.interpolate({
-    inputRange: [0, HIDE_HEIGHT + 80],
-    outputRange: [0, -HIDE_HEIGHT],
-    extrapolate: 'clamp'
-  });
-
-
-
-  return (
-    <View style={styles.safeArea}>
-      <Animated.View
-        style={{ translateY }}
-      >
+  render() {
+    return (
+      <SafeAreaView style={styles.safeArea}>
         <View>
-          <View style={styles.header}>
-            <HeaderHome navigation={navigation} />
+          <UserDetails navigation={this.props.navigation} />
+        </View>
+        <ScrollView>
+          <View style={styles.tabsContainer}>
+            <ListAtividades />
           </View>
-          <UserDetails navigation={navigation} />
-        </View>
-        <View style={styles.tabsContainer}>
-          <ListAtividades scrollY={scrollY} />
-        </View>
-      </Animated.View>
-    </View>
-  );
+        </ScrollView>
+        <FAB
+          style={styles.fab}
+          bigger
+          icon="add"
+          onPress={() => this.props.navigation.navigate('CalendarScreen')}
+        />
+      </SafeAreaView>
+    );
+  }
 }
-
-
-
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.backgroundGray
+    backgroundColor: theme.secondaryColor
   },
   card: {
     flexDirection: 'column',
@@ -67,5 +58,12 @@ const styles = StyleSheet.create({
   header: {
     height: Header.HEIGHT,
     marginTop: STATUSBAR_HEIGHT
-  }
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    backgroundColor: theme.primaryColor,
+  },
 });
