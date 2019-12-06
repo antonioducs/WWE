@@ -181,7 +181,7 @@ class StartScreen extends Component {
         if (error.code == 'auth/user-not-found') {
           Alert.alert(
             "Usuário não encontrado",
-            "Desaja criar um novo usuário?",
+            "Deseja criar um novo usuário?",
             [{
               text: 'Não',
               onPress: () => { }
