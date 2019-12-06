@@ -66,6 +66,9 @@ export const saveUser = user => {
 
   const { currentUser } = firebase.auth();
 
+  if(user.horarios == null){
+    user.horarios = [];
+  }
   if (!user.isAdmin) user.isAdmin = false;
 
   return dispatch => {
