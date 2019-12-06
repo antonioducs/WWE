@@ -42,7 +42,8 @@ function runTiming(clock, value, dest) {
     finished: new Value(0),
     position: new Value(0),
     time: new Value(0),
-    frameTime: new Value(0)
+    frameTime: new Value(0),
+    msg: ""
   };
 
   const config = {
@@ -96,7 +97,7 @@ class StartScreen extends Component {
 
     this.bgA = interpolate(this.buttonOpacity, {
       inputRange: [0, 1],
-      outputRange: [-height / 3 - 50, 0],
+      outputRange: [-height / 3 - 80, 0],
       extrapolate: Extrapolate.CLAMP
     });
 
@@ -147,6 +148,17 @@ class StartScreen extends Component {
     firebase.initializeApp(firebaseConfig);
   }
 
+  getMessageByError(code) {
+    switch (code) {
+      case "auth/user-not-found":
+        return "E-mail inexistente.";
+      case "auth/wrong-password":
+        return "Senha incorreta."
+      default:
+        return "Erro desconhecido.";
+    }
+  }
+
   processLogin = async () => {
     this.setState({
       isLoading: true
@@ -158,7 +170,11 @@ class StartScreen extends Component {
       .signInWithEmailAndPassword(email, password)
       .then(async () => {
         await this.props.processLogin();
-        this.props.navigation.navigate('HomeScreen')
+        if (this.props.user.isAdmin) {
+          this.props.navigation.navigate('MyComponent');
+        } else {
+          this.props.navigation.navigate('HomeScreen');
+        }
       })
       .catch(error => {
 
@@ -182,12 +198,20 @@ class StartScreen extends Component {
                   }
                   )
                   .catch(error => {
-                    console.log(error.message);
+                    this.setState({
+                      isLoading: false,
+                      message: this.getMessageByError(error.code),
+                    });
                   });
               }
             }],
             { cancelable: false }
           );
+        } else {
+          this.setState({
+            isLoading: false,
+            message: this.getMessageByError(error.code),
+          });
         }
       })
 
@@ -256,7 +280,7 @@ class StartScreen extends Component {
             zIndex: this.textInputZindex,
             opacity: this.textInputOpacity,
             transform: [{ translateY: this.textInputY }],
-            height: height / 3,
+            height: height / 3 + 30,
             ...StyleSheet.absoluteFill,
             top: null,
             justifyContent: 'center'
@@ -273,6 +297,9 @@ class StartScreen extends Component {
               </Animated.View>
             </TapGestureHandler>
 
+            <Text style={{
+              margin: 20
+            }}>{this.state.msg}</Text>
             <TextInput placeholder='E-mail'
               style={styles.textInput}
               placeholderTextColor='black'
@@ -302,7 +329,12 @@ class StartScreen extends Component {
     );
   }
 }
-export default connect(null, { newUser, processLogin })(StartScreen);
+
+const mapStateToProps = state => {
+  const { user } = state;
+  return { user };
+}
+export default connect(mapStateToProps, { newUser, processLogin })(StartScreen);
 
 const styles = StyleSheet.create({
   container: {

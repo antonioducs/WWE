@@ -22,8 +22,8 @@
 #define PUBLISH_INTERVAL 1000 * 60 * 1
 
 //config WiFi
-#define WIFI_SSID "MaxtorIV"
-#define WIFI_PASSWORD "HYjvpJYv"
+#define WIFI_SSID "Monitora"
+#define WIFI_PASSWORD "antonio123"
 
 //rfid
 //RST - D2

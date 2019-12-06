@@ -40,7 +40,6 @@ class ListAtividades extends Component {
         }
     }
 
-
     render() {
 
         return (

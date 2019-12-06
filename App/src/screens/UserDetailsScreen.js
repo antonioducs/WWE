@@ -7,7 +7,9 @@ import {
     Button,
     Alert,
     ActivityIndicator,
-    TouchableOpacity
+    TextInput,
+    TouchableOpacity,
+    KeyboardAvoidingView
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import { Camera } from 'expo-camera';
@@ -16,7 +18,6 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 import { connect } from 'react-redux';
 import { saveUser, loadRfid, saveNewUserRfid } from '../actions'
-import { SCREEN_HEIGHT } from '../config/constants';
 
 import IconCamera from '../../assets/camera.svg';
 import IconCartao from '../../assets/cartao.svg';
@@ -34,11 +35,16 @@ class UserDetailsScreen extends Component {
         isLoading: false,
         isCamera: false,
         isScanQR: false,
+        isName: false,
+        hasFocus: true,
         hasCameraPermission: null,
     };
 
-    //faz uma copia local para salvar as alterações
+    setFocus(hasFocus) {
+        this.setState({ hasFocus });
+    }
 
+    //faz uma copia local para salvar as alterações
     async componentDidMount() {
         this.rollBackUser();
 
@@ -56,6 +62,7 @@ class UserDetailsScreen extends Component {
             }
         }*/
     }
+
 
     _pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -77,30 +84,18 @@ class UserDetailsScreen extends Component {
 
     rollBackUser() {
         const { user } = this.props
-        let saveUser = {};
-        if (user.horarios != null) {
-            saveUser = {
-                name: user.name,
-                photo: user.photo,
-                apt: user.apt,
-                rfid: user.rfid,
-                horarios: user.horarios,
-                isAdmin: user.admin
-            }
-        } else {
-            saveUser = {
-                name: user.name,
-                photo: user.photo,
-                apt: user.apt,
-                rfid: user.rfid,
-                isAdmin: user.admin
-            }
-        }
+        const saveUser = {
+            name: user.name,
+            photo: user.photo,
+            apt: user.apt,
+            rfid: user.rfid,
+            horarios: user.horarios,
+            isAdmin: user.admin
+        };
         this.setState({
             user: saveUser
         })
     }
-
 
     onChangeName = value => {
         const attUser = this.state.user;
@@ -108,6 +103,27 @@ class UserDetailsScreen extends Component {
         this.setState({
             user: attUser
         })
+    }
+
+    viewName() {
+        return (
+            <KeyboardAvoidingView style={styles.safeArea2} behavior="padding">
+
+                <TextInput
+                    style={{ fontSize: 20, color: 'white' }}
+                    placeholder="Clica aqui para alterar o seu nome"
+                    onFocus={this.setFocus.bind(this, true)}
+                    value={this.state.user.name}
+                    onChangeText={value => {this.onChangeName(value)}}
+                />
+
+                <Ripple style={styles.buttonSalCan}
+                    onPress={() => this.setState({ isName: false })}
+                >
+                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20 }}>confirmar</Text>
+                </Ripple>
+            </KeyboardAvoidingView>
+        );
     }
 
     renderButton() {
@@ -120,7 +136,7 @@ class UserDetailsScreen extends Component {
                 style={[styles.buttonSalCan, { marginTop: 20 }]}
                 onPress={async () => {
                     this.setState({
-                        isLoading: false
+                        isLoading: true
                     })
                     try {
                         if (this.state.user.rfid != this.props.user.rfid) { //verifica se foi alterado o card
@@ -163,61 +179,65 @@ class UserDetailsScreen extends Component {
                     />
                 </View>
 
-                <Ripple style={[styles.button, { marginTop: 35 }]}>
-                    <IconCartao fill={'white'} />
-                    <Text
-                        style={styles.txt}
-                        value={this.state.user.name}
-                        onChangeText={value => this.onChangeName(value)}
+                <View style={{ alignItems: 'center' }}>
+                    <Ripple style={[styles.button, { marginTop: 35 }]}
+                        onPress={() => this.setState({ isName: true })}
                     >
-                        Alterar nome
+                        <IconCartao fill={'white'} />
+                        <Text
+                            style={styles.txt}
+                            value={this.state.user.name}
+                            onChangeText={value => this.onChangeName(value)}
+                        >
+                            Alterar nome
                     </Text>
-                </Ripple>
+                    </Ripple>
 
-                <Ripple
-                    style={styles.button}
-                    onPress={() => {
-                        Alert.alert(
-                            'Capturar Imagem',
-                            'De onde você deseja obter a imagem?',
-                            [
-                                {
-                                    text: 'Camera',
-                                    onPress: () => {
-                                        this.setState({ isCamera: true })
+                    <Ripple
+                        style={styles.button}
+                        onPress={() => {
+                            Alert.alert(
+                                'Capturar Imagem',
+                                'De onde você deseja obter a imagem?',
+                                [
+                                    {
+                                        text: 'Camera',
+                                        onPress: () => {
+                                            this.setState({ isCamera: true })
+                                        }
+                                    },
+                                    {
+                                        text: 'Galeria',
+                                        onPress: () => {
+                                            this._pickImage();
+                                        }
                                     }
-                                },
-                                {
-                                    text: 'Galeria',
-                                    onPress: () => {
-                                        this._pickImage();
-                                    }
-                                }
-                            ]
-                        )
-                    }}
-                >
-                    <IconCamera fill={'white'} />
-                    <Text style={styles.txt}>Alterar foto</Text>
-                </Ripple>
+                                ]
+                            )
+                        }}
+                    >
+                        <IconCamera fill={'white'} />
+                        <Text style={styles.txt}>Alterar foto</Text>
+                    </Ripple>
 
 
-                <Ripple
-                    style={styles.button}
-                    title='Alterar '
-                    onPress={() =>
-                        this.setState({ isScanQR: true })
-                    }
-                >
-                    <IconCodigo fill={'white'} />
-                    <Text style={styles.txt}>Ler código QR</Text>
-                </Ripple>
+                    <Ripple
+                        style={styles.button}
+                        title='Alterar '
+                        onPress={() =>
+                            this.setState({ isScanQR: true })
+                        }
+                    >
+                        <IconCodigo fill={'white'} />
+                        <Text style={styles.txt}>Ler código QR</Text>
+                    </Ripple>
+                </View>
 
-                <View>
+                <View style={{ alignItems: 'center' }}>
                     {this.renderButton()}
 
                     <Ripple
-                        style={{ ...styles.buttonSalCan, backgroundColor: 'red' }}
+                        style={[styles.buttonSalCan, { backgroundColor: 'red' }]}
                         onPress={() => {
                             this.rollBackUser();
                             this.props.navigation.goBack();
@@ -227,6 +247,7 @@ class UserDetailsScreen extends Component {
                     </Ripple>
 
                 </View>
+
             </View>
         );
     }
@@ -334,6 +355,9 @@ class UserDetailsScreen extends Component {
         if (this.state.isScanQR)
             return (this.viewScanQR());
 
+        if (this.state.isName)
+            return (this.viewName());
+
         return (this.viewForm());
     }
 }
@@ -384,20 +408,6 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     viewImg: {
-        backgroundColor: theme.primaryColor,
-        height: (SCREEN_HEIGHT / 3) - 10,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-        paddingLeft: 20,
-        paddingRight: 20,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.22,
-        shadowRadius: 2.22,
-        elevation: 3,
         alignItems: 'center',
         paddingHorizontal: 110
     },
@@ -421,10 +431,6 @@ const styles = StyleSheet.create({
         marginLeft: 15
     },
     viewApt: {
-        borderColor: 'black',
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
         marginTop: 20,
         marginBottom: 40,
         display: 'flex',
@@ -434,20 +440,17 @@ const styles = StyleSheet.create({
         height: 45,
         flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: 120,
+        width: '50%',
         padding: 10
     },
 
     buttonSalCan: {
         height: 30,
-        marginHorizontal: 130,
+        width: '70%',
         borderRadius: 55,
         alignItems: 'center',
         justifyContent: 'center',
         marginVertical: 5,
-        shadowColor: 'black',
-        shadowOpacity: 0.2,
-        elevation: 4,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -457,6 +460,14 @@ const styles = StyleSheet.create({
         shadowRadius: 1.41,
         elevation: 2,
         backgroundColor: 'black',
-    }
+    },
+
+    safeArea2: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: '#2b2f33',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
 });
 

@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     btnReservar: {
         backgroundColor: theme.secondaryColor,
         height: 70,
-        width: '70%',
+        width: '80%',
         borderRadius: 35,
         alignItems: 'center',
         justifyContent: 'center',

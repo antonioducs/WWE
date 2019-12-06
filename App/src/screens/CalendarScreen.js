@@ -54,8 +54,8 @@ class CalendarScreen extends Component {
         };
         LocaleConfig.defaultLocale = 'pt';
 
-        if(this.state.loadComplete)
-            return(<ActivityIndicator />);
+        if (this.state.loadComplete)
+            return (<ActivityIndicator />);
 
         return (
             <>

@@ -8,13 +8,15 @@ import CalendarScreen from './screens/CalendarScreen';
 import HomeScreen from './screens/HomeScreen';
 import TimesScreen from './screens/TimesScreen';
 import UserDetailsScreen from './screens/UserDetailsScreen';
+import MyComponent from './screens/MyComponent';
+
 
 import theme from './styles/theme';
 
 
 const AppNavigator = createStackNavigator(
   {
-    
+
     StartScreen: {
       screen: StartScreen,
       navigationOptions: {
@@ -37,14 +39,14 @@ const AppNavigator = createStackNavigator(
         }
       }
     },
-    
+
     UserDetailsScreen: {
       screen: UserDetailsScreen,
       navigationOptions: {
         header: null
       }
     },
-    
+
     TimesScreen: {
       screen: TimesScreen,
       navigationOptions: {
@@ -52,6 +54,12 @@ const AppNavigator = createStackNavigator(
         headerStyle: {
           backgroundColor: theme.primaryColor
         }
+      }
+    },
+    MyComponent: {
+      screen: MyComponent,
+      navigationOptions: {
+        header: null
       }
     }
   }

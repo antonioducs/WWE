@@ -7,11 +7,6 @@ const userLoginSucess = user => ({
   user
 });
 
-export const USER_LOGOUT = 'USER_LOGOUT';
-const userLogout = () => ({
-  type: USER_LOGOUT,
-})
-
 
 export const SET_FIELD_USER = 'SET_FIELD_USER';
 export const setFieldUser = (field, value) => {
@@ -95,7 +90,9 @@ export const setUserNewReservationDay = (day, time, user) => {
   const { currentUser } = firebase.auth();
 
   if (user.horarios != null) {
-    user.horarios.push(day + "" + time);
+    user = {
+      ...user, horarios: [...user.horarios, day + "" + time]
+    }
   }
   else {
     user = { ...user, horarios: [day + "" + time] }
@@ -112,12 +109,9 @@ export const setUserNewReservationDay = (day, time, user) => {
   }
 }
 
-export const deleteUserNewReservationDay = (day, time, user) => {
+export const deleteUserNewReservationDay = user => {
 
   const { currentUser } = firebase.auth();
-
-  let index = user.horarios.indexOf(day + "" + time)
-  user.horarios.splice(index, 1);
 
   return async dispatch => {
     await firebase

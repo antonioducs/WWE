@@ -57,7 +57,7 @@ class TimesScreen extends Component {
             && (data.getMonth() + 1) === day.month) {
             hoje = true;
         }
-        
+
         const { tempoCicloEmMinutos } = this.props.configs;
         const listaHorarios = [];
 
@@ -65,7 +65,7 @@ class TimesScreen extends Component {
             var hora = parseInt(min / 60);
             var minuto = min % 60;
             if (hoje) {
-                if (data.getHours() <= hora){
+                if (data.getHours() <= hora) {
                     listaHorarios.push("" + (hora < 10 ? ("0" + hora) : hora) + "h" +
                         (minuto < 10 ? ("0" + minuto) : minuto) + "min");
                 }
@@ -114,7 +114,10 @@ class TimesScreen extends Component {
             }, {
                 text: 'Sim',
                 onPress: async () => {
-                    await this.props.deleteUserNewReservationDay(day, time, this.props.user);
+                    const { user } = this.props;
+                    let index = user.horarios.indexOf(`"${day + "" + time}"`)
+                    user.horarios.splice(index, 1);
+                    await this.props.deleteUserNewReservationDay(user);
                     await this.props.deleteReservationDay(day, time);
                 }
             }

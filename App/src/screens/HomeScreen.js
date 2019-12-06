@@ -11,9 +11,9 @@ import ListAtividades from '../components/ListAtividades';
 
 
 const SUGGESTED_HEIGHT = SCREEN_HEIGHT / 3;
-const HIDE_HEIGHT = SUGGESTED_HEIGHT + Header.HEIGHT;
 
 export default class HomeScreen extends Component {
+
 
   render() {
     return (
